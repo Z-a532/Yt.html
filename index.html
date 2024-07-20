@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="google-site-verification" content="_H4aodiHyvUTzo34WR6qxcQRN9SFO6GDATB-v3VdyqA" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Code Editor</title>
+  <style>
+    /* CSS Styles */
+    body {
+      font-family: 'Consolas', monospace;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+
+    .editor {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .editor-header {
+      background-color: #252526;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .editor-header button {
+      background-color: #3c3c3c;
+      color: #d4d4d4;
+      border: none;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .editor-content {
+      flex: 1;
+      display: flex;
+    }
+
+    .code-editor {
+      flex: 1;
+      background-color: #1e1e1e;
+      font-size: 16px;
+      padding: 20px;
+      overflow-y: auto;
+      outline: none;
+    }
+
+    .preview {
+      flex: 1;
+      background-color: #ffffff;
+      padding: 20px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="editor">
+      <div class="editor-header">
+        <button onclick="updatePreview()">Preview</button>
+        <button onclick="downloadCode()">Download</button>
+        <button onclick="formatCode()">Format</button>
+      </div>
+      <div class="editor-content">
+        <div class="code-editor" contenteditable="true" placeholder="Write your code here..."></div>
+        <div class="preview">
+          <iframe id="preview-iframe" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript Functionality
+    const codeEditor = document.querySelector('.code-editor');
+    const previewIframe = document.getElementById('preview-iframe');
+
+    function updatePreview() {
+      const code = codeEditor.innerText;
+      previewIframe.contentDocument.open();
+      previewIframe.contentDocument.write(code);
+      previewIframe.contentDocument.close();
+    }
+
+    function downloadCode() {
+      const code = codeEditor.innerText;
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = 'code.html';
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function formatCode() {
+      const code = codeEditor.innerText;
+      const formattedCode = beautifyHTML(code);
+      codeEditor.innerText = formattedCode;
+      updatePreview();
+    }
+
+    function beautifyHTML(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'application/xml');
+      const serializer = new XMLSerializer();
+      return serializer.serializeToString(doc.documentElement);
+    }
+
+    // Auto-update preview on code change
+    codeEditor.addEventListener('input', updatePreview);
+  </script>
+</body>
+</html>
